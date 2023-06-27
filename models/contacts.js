@@ -1,8 +1,17 @@
-// const fs = require('fs/promises')
+const fs = require('fs/promises')
+const path = require("path");
+const contactsPath = path.join(__dirname, "contacts.json");
 
-const listContacts = async () => {}
+const listContacts = async () => {
+  const contacts = await fs.readFile(contactsPath);
+  return JSON.parse(contacts);
+}
 
-const getContactById = async (contactId) => {}
+async function getContactById(contactId) {
+  const contact = await listContacts()
+  const result = contact.find(contact => contact.id === contactId)
+  return result || null
+}
 
 const removeContact = async (contactId) => {}
 
