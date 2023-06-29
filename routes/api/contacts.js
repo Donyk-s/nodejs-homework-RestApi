@@ -1,5 +1,6 @@
 const express = require('express')
 const { listContacts, getContactById, addContact } = require('../../models/contacts')
+const {HttpError} = require('../../helpers');
 const Joi = require("joi")
 const addSchema = Joi.object({
   name: Joi.string().required().messages({
@@ -21,7 +22,7 @@ router.get('/', async (req, res, next) => {
     const contacts = await listContacts();
     res.json({ contacts });
   } catch (error) {
-    next(error);
+   next(error);
   }
 });
 
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res, next) => {
     if (contact) {
       res.status(200).json(contact);
     } else {
-      res.status(404).json({ message: 'Not found' });
+      throw HttpError(404, 'Not found')
     }
   } catch (error) {
     next(error);
