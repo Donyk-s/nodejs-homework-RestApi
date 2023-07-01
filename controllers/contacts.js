@@ -1,9 +1,7 @@
 
 const { listContacts, getContactById, addContact, updateContact, removeContact } = require('../models/contacts');
 const ctrlWrapper = require('../helpers/ctrlWrapper');
-// const {validateAddContact, checkContactExists} = require('../middlewares');
 const { HttpError } = require('../helpers/HttpError');
-// const { validateBody } = require('../middlewares/validateBody');
 
 const getAllContacts = async (req, res) => {
   const contacts = await listContacts();
@@ -29,7 +27,7 @@ const addOneContact = async (req, res) => {
   return res.status(201).json({ id: newContact.id, name, email, phone });
 };
   
-const updateContactById = async (req, res, next) => {
+const updateContactById = async (req, res) => {
     const { contactId } = req.params;
     const { name, email, phone } = req.body;
   
@@ -39,7 +37,7 @@ const updateContactById = async (req, res, next) => {
     res.json(result);
   };
 
-const deleteContactById = async (req, res, next) => {
+const deleteContactById = async (req, res) => {
   const { contactId } = req.params;
   const result = await removeContact(contactId);
   if (!result) {
@@ -51,7 +49,7 @@ const deleteContactById = async (req, res, next) => {
 module.exports = {
   getAllContacts: ctrlWrapper(getAllContacts),
   getById: ctrlWrapper(getById),
-  addOneContact,
+  addOneContact: ctrlWrapper(addOneContact),
   updateContactById: ctrlWrapper(updateContactById),
   deleteContactById: ctrlWrapper(deleteContactById)
 };
