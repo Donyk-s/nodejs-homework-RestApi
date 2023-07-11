@@ -7,3 +7,4 @@ const router = express.Router()
 
 router.post("/register", validateBody(validateUserSchema.registerSchema), ctrl.register)
 module.exports = router;
+
