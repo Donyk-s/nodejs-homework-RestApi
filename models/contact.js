@@ -18,10 +18,13 @@ const contactSchema = new Schema(
         type: Boolean,
         default: false,
       },
+      owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
     },
-    { versionKey: false, timestamps: true}
- 
-  );
+    { versionKey: false, timestamps: true});
+    
   contactSchema.post("save", handelMongooseError);
   const Contact = model('Contact', contactSchema)
 
