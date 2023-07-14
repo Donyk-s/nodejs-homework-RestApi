@@ -46,9 +46,15 @@ const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "7d"})
 res.json({token})
 }
 
+const getCurrent = async(req, res) =>{
+  const {email, name} = req.user;
+  res.json({email, name})
+}
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
+  getCurrent:ctrlWrapper(getCurrent)
 };
 
 
