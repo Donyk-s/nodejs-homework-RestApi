@@ -10,7 +10,7 @@ const register = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (user != null) {
+  if (user) {
     return res.status(409).json({ "message": "Email in use" });
   }
 
