@@ -60,11 +60,29 @@ const logout = async (req, res) =>{
 
 }
 
+
+const updateAvatar = async (req, res, next) => {
+  const { id } = req.user; 
+  const user = await User.findByIdAndUpdate(
+    id,
+    { avatar: req.file.filename },
+    { new: true }
+  ).select({ name: 1, email: 1, avatar: 1 });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  return res.json(user);
+};
+
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
 
 
