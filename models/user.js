@@ -27,10 +27,10 @@ const userSchema = new Schema({
   token: {
     type: String,
     default: "",
-},
+  },
 avatar: {
   type: String,
-  default: null,
+  required: true,
 }
 },
 { versionKey: false, timestamps: true });

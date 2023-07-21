@@ -1,10 +1,18 @@
 const bcrypt = require('bcrypt');
+const gravatar = require("gravatar")
+const path = require('path')
+const fs = require('fs/promises')
+const Jimp = require('jimp')
+
 const { User } = require('../models/user');
 const ctrlWrapper = require('../helpers/ctrlWrapper');
 const { HttpError } = require('../helpers/HttpError');
 const jwt = require("jsonwebtoken")
 require("dotenv").config()
-const {SECRET_KEY} = process.env
+const { SECRET_KEY } = process.env
+
+
+const avatarDir = path.join(__dirname, "../", "public", "avatars")
 
 const register = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -15,8 +23,9 @@ const register = async (req, res, next) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email)
 
-  await User.create({ name, email, password: hashedPassword });
+  await User.create({ name, email, password: hashedPassword, avatarURL });
   return res.json({ message: 'User created' });
 }
 
@@ -61,19 +70,23 @@ const logout = async (req, res) =>{
 }
 
 
-const updateAvatar = async (req, res, next) => {
-  const { id } = req.user; 
-  const user = await User.findByIdAndUpdate(
-    id,
-    { avatar: req.file.filename },
-    { new: true }
-  ).select({ name: 1, email: 1, avatar: 1 });
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  
+  const { path: tempUpload, originalname } = req.file;
+  const filename = `${_id}_${originalname}`
+  const resultUpload = path.join(avatarDir, filename );
+  await fs.rename(tempUpload, resultUpload);
+  const avatarImage = await Jimp.read(resultUpload);
+  avatarImage.resize(250, 250); 
+  await avatarImage.writeAsync(resultUpload);
+  const avatarURL = path.join("avatars", filename );
+  await User.findByIdAndUpdate(_id, { avatarURL });
 
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
+  res.json({
+    avatarURL,
+  })
 
-  return res.json(user);
 };
 
 
@@ -84,9 +97,3 @@ module.exports = {
   logout: ctrlWrapper(logout),
   updateAvatar: ctrlWrapper(updateAvatar),
 };
-
-
-
-
-
-
